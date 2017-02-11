@@ -17,7 +17,7 @@ def get_bitfinex():
             if ("\n" not in nextSiblingElement.text): #the desired element does not have a newline character in the next
                 marketPrice = float(nextSiblingElement.text)
 
-    return marketPrice
+    return float(marketPrice)
 
 BTCE_URL = "https://btc-e.com"
 def get_btce():
@@ -25,7 +25,7 @@ def get_btce():
     soup = BeautifulSoup(r, "html.parser")
     strongList = soup.select("strong")
     price = re.findall("[0-9]+.[0-9]+", str(strongList[0]))
-    return price[0]
+    return float(price[0])
 
 BITSTAMP_URL = "https://bitcoinwisdom.com"
 def get_bitstamp():
@@ -33,8 +33,23 @@ def get_bitstamp():
     soup = BeautifulSoup(r, "html.parser")
     span = soup.find("span", {"id": "market_bitstampbtcusd"})
     price = re.findall("[0-9]+.[0-9]+", str(span))
-    return price[0]
+    return float(price[0])
 
+CEXIO_URL = "https://cex.io"
+def get_cexio():
+    r = requests.get(CEXIO_URL, headers=headers).text
+    soup = BeautifulSoup(r, "html.parser")
+    span = soup.find("span", {"id": "ticker-BTC-USD-price"})
+    price = re.findall("[0-9]+.[0-9]+", str(span))
+    return float(price[0])
+
+ITBIT_URL = "https://www.itbit.com"
+def get_itbit():
+    r = requests.get(ITBIT_URL, headers=headers).text
+    soup = BeautifulSoup(r, "html.parser")
+    span = soup.find("span", {"id": "last"})
+    price = re.findall("[0-9]+.[0-9]+", str(span))
+    return float(price[0])
 #The method will return the current market price for a given exchange
 #exchangeName - a string that specifies the exchange
 #returns the current market price as a float
@@ -45,6 +60,10 @@ def handler(exchangeName):
         return get_btce()
     elif (exchangeName == "bitstamp"):
         return get_bitstamp()
+    elif (exchangeName == "cexio"):
+        return get_cexio()
+    elif (exchangeName == "itbit"):
+        return get_cexio()
     else:
         print "Unrecognized exchange"
         return 0
@@ -52,3 +71,5 @@ def handler(exchangeName):
 print("Bitfinex market price: "+str(handler("bitfinex")))
 print("BTC-e market price: "+str(handler("btce")))
 print("Bitstamp market price: "+str(handler("bitstamp")))
+print("CEX.io market price: "+str(handler("cexio")))
+print("itBit market price: "+str(handler("itbit")))
