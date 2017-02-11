@@ -63,7 +63,7 @@ def get_itbit():
 def get_kraken():
     json_string = k.query_public('Ticker', {'pair': 'XXBTZUSD'})
     ticker_list = re.findall("[0-9]+.[0-9]+", str(json_string))
-    return ticker_list[2]
+    return float(ticker_list[2])
 
 #The method will return the current market price for a given exchange
 #exchangeName - a string that specifies the exchange
@@ -86,9 +86,9 @@ def handler(exchangeName):
         return 0
 
 
-print("Bitfinex market price: "+str(handler("bitfinex")))
-print("BTC-e market price: "+str(handler("btce")))
-print("Bitstamp market price: "+str(handler("bitstamp")))
-print("CEX.io market price: "+str(handler("cexio")))
+#print("Bitfinex market price: "+str(handler("bitfinex")))
+#print("BTC-e market price: "+str(handler("btce")))
+#print("Bitstamp market price: "+str(handler("bitstamp")))
+#print("CEX.io market price: "+str(handler("cexio")))
 #print("itBit market price: "+str(handler("itbit")))
-print("Kraken market price: "+str(handler("kraken")))
+#print("Kraken market price: "+str(handler("kraken")))
