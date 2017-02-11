@@ -23,7 +23,7 @@ def loop():
     for phoneNum, info in global_data.USER_DICT.iteritems():
         new_suggestions = []
         for opportunity in arbitrage_opportunities:
-            if set(opportunity[0:2]).issubset(set(info[0])) and (opportunity[2] >= info[1]) and info[0] > 0:
+            if set(opportunity[0:2]).issubset(set(info[0])) and (opportunity[2] >= info[1]) and info[1] > 0:
 
                 if(phoneNum in active_suggestions):
                     users_active_suggestions = active_suggestions[phoneNum]
@@ -43,24 +43,29 @@ def loop():
                 active_suggestions[phoneNum] = active_suggestions[phoneNum] + new_suggestions
             else:
                 active_suggestions[phoneNum] = new_suggestions
-            # Message user with phone # = user[0] new_suggestions list if its len > 0
-            print(phoneNum)
-            print("\tNEW:")
-            for opportunity in new_suggestions:
-                print("\t\t" + "  ".join(str(i) for i in opportunity))
-            print("\tACTIVE:")
-            for active in active_suggestions[phoneNum]:
-                print("\t\t" + "  ".join(str(i) for i in active))
 
+            # Message user with phone # = user[0] new_suggestions list if its len > 0
+            new_text = ""
+            print(phoneNum)
+            for opportunity in new_suggestions:
+                new_text += "Buy: " + str(opportunity[0]) + ", Sell: " + str(opportunity[1]) + " | " + str(opportunity[2]) + "\n"
+                print("\t\t" + "  ".join(str(i) for i in opportunity))
+                
+            handle_messages.send_message(phoneNum,new_text)
+
+
+        # Look through list of made recommendations and remove ones that have dropped below threshold
         if phoneNum in active_suggestions:
             expired_opportunities = []
             for active_opportunity in active_suggestions[phoneNum]:
                 matched = 0
                 for current_opportunity in arbitrage_opportunities:
                     if current_opportunity[0] == active_opportunity[0] and current_opportunity[1] == active_opportunity[1] and current_opportunity[2] >= (global_data.USER_DICT[phoneNum][1]*.97):
-                        matched = 1
+                        if set(active_opportunity[0:2]).issubset(set(global_data.USER_DICT[phoneNum][0])):
+                            matched = 1
                         break
-                if matched == 0:
+
+                if matched != 1:
                     expired_opportunities.append(active_opportunity)
             active_suggestions[phoneNum] = list(set(active_suggestions[phoneNum]) - set(expired_opportunities))
 
@@ -69,11 +74,17 @@ def loop():
     print(active_suggestions)
 
 
-
+loop_count = 0
+sleep_time = 2
+# Load user dict from blob
 while(True):
     print("Getting new messages...")
-    global_data.currentSid = handle_messages.get_next_message(global_data.currentSid)
-    print("\n\n\nCHECKING ARBITRAGE OPPORTUNITIES...\n")
-    loop()
-    print("\n...SLEEPING")
-    time.sleep(10)
+    global_data.currentSid = handle_messages.get_next_message()
+    # Save user dict to blob
+    if (loop_count % 10 == 0):
+        print("\n\n\nCHECKING ARBITRAGE OPPORTUNITIES...\n")
+        loop()
+        print("\n...SLEEPING")
+
+    loop_count+=sleep_time
+    time.sleep(sleep_time)

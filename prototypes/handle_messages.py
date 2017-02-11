@@ -95,19 +95,17 @@ def handle_message(message):
 #Returns True if there is a new message
 #False otherwise
 def get_next_message():
-    f = open("lastSid.txt", "r+")
+    f = open("lastSid.txt", "r")
     lastSid = f.read()
-    connected = 0
-    while(connected == 0):
-        try:
-            messages = client.messages.list(to="+17248061286") #get messages
-            connected = 1
-        except:
-            time.sleep(1)
-
+    f.close()
+    try:
+        messages = client.messages.list(to="+17248061286") #get messages
+    except:
+        return
+        
     i=0
-    print "last sid:    "+lastSid
-    while(messages[i].sid != lastSid): #check if there is at least 1 new message
+    print "message sid: "+messages[i].sid+"last sid:    "+lastSid
+    while(messages[i].sid != lastSid.rstrip('\n')): #check if there is at least 1 new message
         m = messages[i] #get next message
         print "current sid: "+m.sid
         print "last sid:    "+lastSid
@@ -118,13 +116,15 @@ def get_next_message():
         i += 1
 
     lastSid = messages[0].sid
+    f = open("lastSid.txt", "w")
     f.write(lastSid)
     f.close()
     print "lastSid: "+lastSid
     #return currentSid
 
 #testing
-
+'''
 while (True):
     currentSid = get_next_message() #new phone number
     print global_data.USER_DICT
+'''
