@@ -2,7 +2,7 @@ import check_arbitrage
 import time
 import global_data
 import handle_messages
-
+import cPickle as pickle
 '''
 users = {'7247416248':(['bitfenix','cexio'],.025),
          '7248144801':(['btce','bitstamp','cexio'], .017),
@@ -11,7 +11,8 @@ users = {'7247416248':(['bitfenix','cexio'],.025),
          '7245381363':(['kraken','bitfenix'], .017)}
 EXCHANGELIST = ["bitfinex", "bitstamp", "cexio", "kraken"]
 '''
-active_suggestions = {}
+active_suggestions = pickle.load( open( "active_suggestions.p", "rb" ) )
+print active_suggestions
 def loop():
     # Update list of arbitrage opportunities
 
@@ -50,7 +51,7 @@ def loop():
             for opportunity in new_suggestions:
                 new_text += "Buy: " + str(opportunity[0]) + ", Sell: " + str(opportunity[1]) + " | " + str(opportunity[2]) + "\n"
                 print("\t\t" + "  ".join(str(i) for i in opportunity))
-                
+
             handle_messages.send_message(phoneNum,new_text)
 
 
@@ -77,13 +78,16 @@ def loop():
 loop_count = 0
 sleep_time = 2
 # Load user dict from blob
+global_data.USER_DICT = pickle.load( open( "user_dict.p", "rb" ) )
 while(True):
     print("Getting new messages...")
     global_data.currentSid = handle_messages.get_next_message()
     # Save user dict to blob
+    pickle.dump( global_data.USER_DICT, open( "user_dict.p", "wb" ) )
     if (loop_count % 10 == 0):
         print("\n\n\nCHECKING ARBITRAGE OPPORTUNITIES...\n")
         loop()
+        pickle.dump( active_suggestions, open( "active_suggestions.p", "wb" ) )
         print("\n...SLEEPING")
 
     loop_count+=sleep_time

@@ -95,14 +95,14 @@ def handle_message(message):
 #Returns True if there is a new message
 #False otherwise
 def get_next_message():
-    f = open("lastSid.txt", "r")
+    f = open("last_sid.txt", "r")
     lastSid = f.read()
     f.close()
     try:
         messages = client.messages.list(to="+17248061286") #get messages
     except:
         return
-        
+
     i=0
     print "message sid: "+messages[i].sid+"last sid:    "+lastSid
     while(messages[i].sid != lastSid.rstrip('\n')): #check if there is at least 1 new message
@@ -116,7 +116,7 @@ def get_next_message():
         i += 1
 
     lastSid = messages[0].sid
-    f = open("lastSid.txt", "w")
+    f = open("last_sid.txt", "w")
     f.write(lastSid)
     f.close()
     print "lastSid: "+lastSid
