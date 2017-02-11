@@ -36,12 +36,12 @@ def arbitrage_difference_withfees(marketPriceDict, exchange1, exchange2):
         #price1 is buy
         price1 *= (1.0+fee1)
         price2 *= (1.0-fee2)
-        return (exchange1, exchange2, ((price2 - price1) * 100 / price1))
+        return (exchange1, exchange2, ((price2 - price1) / price1))
     else:
         #price2 is buy
         price1 *= (1.0-fee1)
         price2 *= (1.0+fee2)
-        return (exchange2, exchange1, ((price1 - price2) * 100 / price2))
+        return (exchange2, exchange1, ((price1 - price2) / price2))
 
 
 #The function calculates the potential arbritrage between two exchanges
@@ -83,7 +83,16 @@ def handler(listOfExchanges):
 
     #populating market prices
     for exch in listOfExchanges:
-        marketPriceDict[exch] = get_market_prices.handler(exch)
+        successful_crawl = 0
+        attempt_count = 0
+        while(successful_crawl == 0 and attempt_count < 3):
+            attempt_count+=1
+            try:
+                marketPriceDict[exch] = get_market_prices.handler(exch)
+                successful_crawl = 1
+            except:
+                time.sleep(1)
+                pass
 
     #obtain possible combinations
     arbitrage_opportunities = []
