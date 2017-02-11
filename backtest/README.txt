@@ -8,11 +8,11 @@ btce.csv
 Edit the location (CSV_DIR) in historical_analysis.py to point to the directory
 containing the .csv's
 
-See the other globals at the top that you can manipulate:
+See the other globals at the top of historical_analysis.py that you can manipulate:
 -exchange list
 -threshold
--everything nth entry in .csv is skippable
+-every nth entry in .csv is skippable
 
 
 Control+Find: "DESIRED DATA"
-to see where I left it at1
+to see where I left it at
