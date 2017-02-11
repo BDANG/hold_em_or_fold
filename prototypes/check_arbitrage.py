@@ -7,20 +7,17 @@ import requests
 import get_market_prices
 import time
 
-BUY_FEES_DICT = {} #fees represented as a decimal
-BUY_FEES_DICT["bitfinex"] = .002
-BUY_FEES_DICT["bitstamp"] = .0025
-BUY_FEES_DICT["btce"] = .005
-BUY_FEES_DICT["cexio"] = .002
-BUY_FEES_DICT["kraken"] = .0026
+BUY_FEES_DICT = {'bitfinex': .002,
+                 'bitstamp': .0025,
+                 'btce': .005,
+                 'cexio': .002,
+                 'kraken': .0026} #fees represented as a decimal
 
-SELL_FEES_DICT = {} #fees represented as a decimal
-SELL_FEES_DICT["bitfinex"] = .002
-SELL_FEES_DICT["bitstamp"] = .0025
-SELL_FEES_DICT["btce"] = .005
-SELL_FEES_DICT["cexio"] = .002
-SELL_FEES_DICT["kraken"] = .0026
-
+SELL_FEES_DICT = {'bitfinex': .002,
+                 'bitstamp': .0025,
+                 'btce': .005,
+                 'cexio': .002,
+                 'kraken': .0026} #fees represented as a decimal
 
 #The function calculates the arbritrage including fees from the exchanges
 #marketPriceDict - a dictionary that maps exchange name to current market price
@@ -28,16 +25,23 @@ SELL_FEES_DICT["kraken"] = .0026
 #exchange2 - an exchange that user is SELLING BTC on
 #!!!CURRENTLY ASSUMES FEE IS APPLIED TO CURRENCY RECIEVED (RECIEVE LESS THAN EXPECTED)
 def arbitrage_difference_withfees(marketPriceDict, exchange1, exchange2):
-    buyFee = BUY_FEES_DICT[exchange1]
-    sellFee = SELL_FEES_DICT[exchange2]
+    fee1 = BUY_FEES_DICT[exchange1]
+    fee2 = SELL_FEES_DICT[exchange2]
 
-    buyPrice = marketPriceDict[exchange1] * (1.0+buyFee)
-    sellPrice = marketPriceDict[exchange2] * (1.0-sellFee)
+    price1 = marketPriceDict[exchange1]
+    price2 = marketPriceDict[exchange2]
 
     #%profit difference = (price sold - price bought) / price bought
-    arbitragePercent = (sellPrice - buyPrice) / buyPrice
-    return arbitragePercent
-
+    if (price1 < price2):
+        #price1 is buy
+        price1 *= (1.0+fee1)
+        price2 *= (1.0-fee2)
+        return (exchange1, exchange2, ((price2 - price1) * 100 / price1))
+    else:
+        #price2 is buy
+        price1 *= (1.0-fee1)
+        price2 *= (1.0+fee2)
+        return (exchange2, exchange1, ((price1 - price2) * 100 / price2))
 
 
 #The function calculates the potential arbritrage between two exchanges
@@ -56,15 +60,14 @@ def calculate_arbitrage(threshold, marketPriceDict, exchange1, exchange2):
     maxMarket = max(market1, market2)
     if (maxMarket == market1): #market1 and exchange1 is the larger price and SOLD
         #DEPRECATED arbDiff = market1/market2 #WIP change to include fees
-        arbitrage = arbitrage_difference_withfees(marketPriceDict, exchange2, exchange1)
         buyExchange = exchange2
         sellExchange = exchange1
     else: #market2 and exchange2 is the larger price
         #DEPRECATED arbDiff = market2/market1 #WIP change to include fees
-        arbitrage = arbitrage_difference_withfees(marketPriceDict, exchange1, exchange2)
         buyExchange = exchange1
         sellExchange = exchange2
 
+    arbitrage = arbitrage_difference_withfees(marketPriceDict, buyExchange, sellExchange)
     if threshold<=arbitrage:
         print "Including fee, the difference is: "+str(arbitrage*100.0)
         print "Buy on exchange: "+buyExchange+" ("+str(marketPriceDict[buyExchange])+")"
@@ -75,7 +78,7 @@ def calculate_arbitrage(threshold, marketPriceDict, exchange1, exchange2):
 #listOfExchanges - a list of exchanges (strings) to check for opportunity
 #listOfExchanges is like ["bitfinex", "btce"] (all lowercase)
 #threshold - a DECIMAL specifying the minimum arbitrage desired
-def handler(listOfExchanges, threshold):
+def handler(listOfExchanges):
     marketPriceDict = {} #dictionary that maps exchange name to current market price
 
     #populating market prices
@@ -83,11 +86,10 @@ def handler(listOfExchanges, threshold):
         marketPriceDict[exch] = get_market_prices.handler(exch)
 
     #obtain possible combinations
+    arbitrage_opportunities = []
     combos = itertools.combinations(marketPriceDict.keys(), 2) #pick every possible combination of a pair of exchanges
     for exchange in combos: #iterate through the combinations
-        calculate_arbitrage(threshold, marketPriceDict, exchange[0], exchange[1])
+        arbitrage = arbitrage_difference_withfees(marketPriceDict, exchange[0], exchange[1])
+        arbitrage_opportunities.append(arbitrage)
 
-
-
-TESTLIST = ["bitfinex", "bitstamp", "cexio", "kraken"]
-handler(TESTLIST, .01)
+    return arbitrage_opportunities
