@@ -3,7 +3,6 @@ import global_data
 import time
 
 global currentSid
-currentSid = "SM9781d28861123b6fa088a2192bd79858" #sid of last checked message
 
 #possible responses to user input
 RESPONSE_DICT = {"newCust":"Welcom to BAO. Choose the bitcoin markets you currently have assets in: 1)bitfinex 2)bitstamp 3)cexio 4)kraken. Reply 'stop' to opt out","minArb":"What would you like your minimum arbitrage threshold to be?(percentage) Reply 'stop' to opt out","thank":"Thank you for using BOA. You will be receiving alerts when there is a valid arbitrage available","stop":"Thank you for using BOA. Text 'Join' to 724-806-1286 if you would like to join again.","invalidNum":"You must enter a number. Please try again","invalidCommand":"The command you entered is invalid. Valid commands are: reset or stop."}
@@ -44,7 +43,14 @@ def handle_message(message):
         print "Get exchanges"
         exchanges = [] #temp list of exchanges from message
         valid = True
+
         for i in range(len(message.body)):
+            try:
+                int(message.body[i])
+            except ValueError:
+                send_message(message.from_,RESPONSE_DICT["invalidNum"])
+                return
+
             if(int(message.body[i])-1 < 0 or int(message.body[i])-1 >= len(global_data.EXCHANGE_LIST)): #invalid number entry
                 send_message(message.from_,RESPONSE_DICT["invalidNum"]) #let user know
                 valid = False
@@ -59,6 +65,12 @@ def handle_message(message):
 
     elif(global_data.USER_DICT[message.from_][1] == 0.0):
         print "get arbitrage"
+        try:
+            float(message.body)
+        except ValueError:
+            send_message(message.from_,RESPONSE_DICT["invalidNum"])
+            return
+
         if(float(message.body)>100 or float(message.body<0)):
             send_message(message.from_,RESPONSE_DICT["invalidNum"])
         else:
@@ -83,8 +95,8 @@ def get_next_message(currentSid):
         m = messages[i] #get next message
         print "new sid "+m.sid
         print "current sid "+currentSid
-        print m.body
-        print m.from_
+        # print m.body
+        # print m.from_
         handle_message(m)
         time.sleep(1.5)
         i += 1
@@ -93,8 +105,8 @@ def get_next_message(currentSid):
     print "currentSid "+currentSid
     return currentSid
 #testing
-#currentSid = "SMec6b597e40d0e5d001a234c1db1f0da9"
+currentSid = "SMceb52e964476d36ac11bbae9f0361a23"
 
-# while (True):
-#     currentSid = get_next_message(currentSid) #new phone number
-#     print global_data.USER_DICT
+while (True):
+    currentSid = get_next_message(currentSid) #new phone number
+    print global_data.USER_DICT
