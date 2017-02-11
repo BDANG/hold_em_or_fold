@@ -13,9 +13,17 @@ client = TwilioRestClient(accountSid, authToken)
 
 #send message to a user
 def send_message(userNumber,message):
-    message = client.messages.create(to=userNumber,
-    from_="+17248061286",
-    body=message)
+
+    connected = 0
+    while(connected == 0):
+        try:
+            message = client.messages.create(to=userNumber,
+            from_="+17248061286",
+            body=message)
+            connected = 1
+        except:
+            time.sleep(1)
+
     return message.status
 
 #parse user message
@@ -88,7 +96,14 @@ def handle_message(message):
 #Returns True if there is a new message
 #False otherwise
 def get_next_message(currentSid):
-    messages = client.messages.list(to="+17248061286") #get messages
+
+    connected = 0
+    while(connected == 0):
+        try:
+            messages = client.messages.list(to="+17248061286") #get messages
+            connected = 1
+        except:
+            time.sleep(1)
 
     i=0
     while(messages[i].sid != currentSid): #check if there is at least 1 new message
@@ -104,9 +119,11 @@ def get_next_message(currentSid):
     currentSid = messages[0].sid
     print "currentSid "+currentSid
     return currentSid
+'''
 #testing
 currentSid = "SMceb52e964476d36ac11bbae9f0361a23"
 
 while (True):
     currentSid = get_next_message(currentSid) #new phone number
     print global_data.USER_DICT
+'''
