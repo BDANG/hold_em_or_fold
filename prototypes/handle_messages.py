@@ -3,11 +3,19 @@ import global_data
 import time
 
 #possible responses to user input
-RESPONSE_DICT = {"newCust":"Welcom to BAO. Choose the bitcoin markets you currently have assets in: \n1)bitfinex \n2)bitstamp \n3)cexio \n4)kraken. Reply 'stop' to opt out","minArb":"What would you like your minimum arbitrage threshold to be?(percentage) Reply 'stop' to opt out","thank":"Thank you for using BOA. You will be receiving alerts when there is a valid arbitrage available","stop":"Thank you for using BOA. Text 'Join' to 724-806-1286 if you would like to join again.","invalidNum":"You must enter a number. Please try again","invalidCommand":"The command you entered is invalid. Valid commands are: reset or stop."}
+RESPONSE_DICT = {"newCust":"Welcom to BAO.","exchanges": "Choose the bitcoin markets you currently have assets in: ","minArb":"What would you like your minimum arbitrage threshold to be?(percentage)","thank":"Thank you for using BOA. You will be receiving alerts when there is a valid arbitrage available. Reply 'stop' to opt out","invalidExchange":"Enter the exchanges as one number (ex: 1234 for all)","invalidArb":"You must enter the percent as an integer. (ex: 1% = 1)","invalidCommand":"The command you entered is invalid. Valid commands are: reset or stop."}
 
 accountSid = "AC410618cdbef7d152a5b5b265e70d06cb" # test account sid
 authToken  = "fcb8105a8fe161a207d7d87680ee63bc"  # test auth token
 client = TwilioRestClient(accountSid, authToken)
+
+def load_exchange_response():
+    i=0
+    for j in global_data.EXCHANGE_LIST:
+        RESPONSE_DICT["exchanges"]+= "\n"+str(i+1)+") "+j[1]
+        print i
+        i += 1
+
 
 #send message to a user
 def send_message(userNumber,message):
@@ -30,7 +38,7 @@ def handle_message(message):
     if(message.body.lower() == "reset"): #user wants to select new markets
         print "Reset"
         global_data.USER_DICT[message.from_] = ([],0.0) #reset values
-        send_message(message.from_,RESPONSE_DICT["newCust"])
+        send_message(message.from_,RESPONSE_DICT["exchanges"])
         return
 
     elif(message.body.lower() == "stop"): #twilio handles unsubscribe message
@@ -43,7 +51,7 @@ def handle_message(message):
         print "New user"
         global_data.USER_DICT[message.from_] = ([],0.0)
 
-        send_message(message.from_,RESPONSE_DICT["newCust"]) #new customer message
+        send_message(message.from_,RESPONSE_DICT["newCust"]+RESPONSE_DICT["exchanges"]) #new customer message
         return
 
     elif(global_data.USER_DICT[message.from_][0] == []): #user message contains markets to follow
@@ -55,11 +63,11 @@ def handle_message(message):
             try:
                 int(message.body[i])
             except ValueError:
-                send_message(message.from_,RESPONSE_DICT["invalidNum"])
+                send_message(message.from_,RESPONSE_DICT["invalidExchange"])
                 return
 
             if(int(message.body[i])-1 < 0 or int(message.body[i])-1 >= len(global_data.EXCHANGE_LIST)): #invalid number entry
-                send_message(message.from_,RESPONSE_DICT["invalidNum"]) #let user know
+                send_message(message.from_,RESPONSE_DICT["invalidExchange"]) #let user know
                 valid = False
                 break
             else:
@@ -75,11 +83,11 @@ def handle_message(message):
         try:
             float(message.body)
         except ValueError:
-            send_message(message.from_,RESPONSE_DICT["invalidNum"])
+            send_message(message.from_,RESPONSE_DICT["invalidArb"])
             return
 
         if(float(message.body)>100 or float(message.body<0)):
-            send_message(message.from_,RESPONSE_DICT["invalidNum"])
+            send_message(message.from_,RESPONSE_DICT["invalidArb"])
         else:
             global_data.USER_DICT[message.from_] = (global_data.USER_DICT[message.from_][0],float(message.body)/100.0) #set customers min arb value
             send_message(message.from_,RESPONSE_DICT["thank"])
@@ -123,8 +131,10 @@ def get_next_message():
     #return currentSid
 
 #testing
-'''
-while (True):
-    currentSid = get_next_message() #new phone number
-    print global_data.USER_DICT
-'''
+# print RESPONSE_DICT["exchanges"]
+# load_exchange_response()
+# print RESPONSE_DICT["exchanges"]
+#
+# while (True):
+#     currentSid = get_next_message() #new phone number
+#     print global_data.USER_DICT
