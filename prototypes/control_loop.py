@@ -34,6 +34,8 @@ def loop():
                 for active_suggestion in users_active_suggestions:
                     if (active_suggestion[0] == opportunity[0] and active_suggestion[1] == opportunity[1]):
                         matched = 1
+                        active_suggestions[phoneNum].remove(active_suggestion)
+                        active_suggestions[phoneNum].append(opportunity)
                         break
                 if(matched == 0):
                     new_suggestions.append(opportunity)
@@ -48,9 +50,9 @@ def loop():
             # Message user with phone # = user[0] new_suggestions list if its len > 0
             new_text = ""
             print(phoneNum)
-            for opportunity in new_suggestions:
-                new_text += "Buy: " + str(opportunity[0]) + ", Sell: " + str(opportunity[1]) + " | " + str(opportunity[2]) + "\n"
-                print("\t\t" + "  ".join(str(i) for i in opportunity))
+            for active in active_suggestions[phoneNum]:
+                new_text += "Buy: " + str(active[0]) + ", Sell: " + str(active[1]) + " | " + str(round(active[2]*100,2)) + "\n"
+                print("\t\t" + "  ".join(str(i) for i in active))
 
             handle_messages.send_message(phoneNum,new_text)
 
@@ -79,6 +81,8 @@ loop_count = 0
 sleep_time = 2
 # Load user dict from blob
 global_data.USER_DICT = pickle.load( open( "user_dict.p", "rb" ) )
+# Load exchanges into RESPONSE_DICT
+handle_messages.load_exchange_response()
 while(True):
     print("Getting new messages...")
     global_data.currentSid = handle_messages.get_next_message()
