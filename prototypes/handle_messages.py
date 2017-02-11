@@ -11,8 +11,8 @@ client = TwilioRestClient(accountSid, authToken)
 
 def load_exchange_response():
     i=0
-    for j in global_data.EXCHANGE_LIST:
-        RESPONSE_DICT["exchanges"]+= "\n"+str(i+1)+") "+j[1]
+    for key, value in global_data.EXCHANGE_LIST.iteritems():
+        RESPONSE_DICT["exchanges"]+= "\n"+str(i+1)+") "+value
         print i
         i += 1
 
@@ -71,7 +71,7 @@ def handle_message(message):
                 valid = False
                 break
             else:
-                exchanges.append(global_data.EXCHANGE_LIST[int(message.body[i])-1][0]) #add each exchange to list
+                exchanges.append(list(global_data.EXCHANGE_LIST.keys())[int(message.body[i])-1]) #add each exchange to list
         #user has sent valid message
         if(valid):
             global_data.USER_DICT[message.from_] = (exchanges,global_data.USER_DICT[message.from_][1])

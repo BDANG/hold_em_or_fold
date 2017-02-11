@@ -8,13 +8,26 @@ Arbitrage is:
 in different markets or in derivative forms in order to take advantage of differing
 prices for the same asset."
 
-The goal of the project is to use twilio to notify subscribers about possible bitcoin
-arbitrage across the exchanges they personally utilize.
+The goal of the project is to notify subscribers about possible bitcoin
+arbitrage across the exchanges they personally utilize. It
+ accounts for the buy/sell fees for each available exchange, and assumes
+ the user has significant equity in both BTC and USD on the exchanges they plan
+ to execute an arbitrage.
 
-The project accounts for the buy/sell fees for each available exchange.
 
-Assumes the user has significant equity in both BTC and USD on the exchanges they plan
-to execute an arbitrage.
+Usage:
+- To begin using the service, send any message to +1 724-806-1286.
+- Follow prompts for exchanges and arbitrage threshold
+  - Exchanges entered as a single string of options.
+    - Example: 12345 to sign up for all
+  - The arbitrage threshold is the percent difference in the value of bitcoin
+  across the different exchanges, taking into account fees for buying/trading.
+    - Example: Enter 1.5 for 1.5%
+    - Recommended values:
+      - Frequent opportunities ~ 3%
+      - Less frequent ~ 4%
+      - Least frequent ~ 5%
+
 
 Disclaimer: we are not responsible for any monetary losses.
 
@@ -26,8 +39,6 @@ Dependencies:
   - historical arbitrage analysis
 - python request library
   - used for web crawling
-- Kraken ex API
-- BeautifulSuit
+- Krakenex API
+- BeautifulSoup
   - used for web crawling/scraping along with requests
-
-Number for sign up: +1 724-806-1286

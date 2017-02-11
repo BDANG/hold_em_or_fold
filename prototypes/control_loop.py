@@ -52,7 +52,7 @@ def loop():
             new_text = ""
             print(phoneNum)
             for active in active_suggestions[phoneNum]:
-                new_text += "Buy: " + str(active[0]) + ", Sell: " + str(active[1]) + " | " + str(round(active[2]*100,2)) + "\n"
+                new_text += "Buy: " + str(global_data.EXCHANGE_LIST[active[0]]) + "  Sell:  " + str(global_data.EXCHANGE_LIST[active[1]]) + "  +" + str(round(active[2]*100,2)) + "%\n"
                 print("\t\t" + "  ".join(str(i) for i in active))
 
             handle_messages.send_message(phoneNum,new_text)

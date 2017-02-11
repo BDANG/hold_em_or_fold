@@ -52,7 +52,7 @@ def handler(listOfExchanges):
     marketPriceDict = {} #dictionary that maps exchange name to current market price
 
     #populating market prices
-    for exch, name in listOfExchanges:
+    for exch, name in listOfExchanges.iteritems():
         successful_crawl = 0
         attempt_count = 0
         while(successful_crawl == 0 and attempt_count < 3):
