@@ -2,10 +2,8 @@ from twilio.rest import TwilioRestClient
 import global_data
 import time
 
-global currentSid
-
 #possible responses to user input
-RESPONSE_DICT = {"newCust":"Welcom to BAO. Choose the bitcoin markets you currently have assets in: 1)bitfinex 2)bitstamp 3)cexio 4)kraken. Reply 'stop' to opt out","minArb":"What would you like your minimum arbitrage threshold to be?(percentage) Reply 'stop' to opt out","thank":"Thank you for using BOA. You will be receiving alerts when there is a valid arbitrage available","stop":"Thank you for using BOA. Text 'Join' to 724-806-1286 if you would like to join again.","invalidNum":"You must enter a number. Please try again","invalidCommand":"The command you entered is invalid. Valid commands are: reset or stop."}
+RESPONSE_DICT = {"newCust":"Welcom to BAO. Choose the bitcoin markets you currently have assets in: \n1)bitfinex \n2)bitstamp \n3)cexio \n4)kraken. Reply 'stop' to opt out","minArb":"What would you like your minimum arbitrage threshold to be?(percentage) Reply 'stop' to opt out","thank":"Thank you for using BOA. You will be receiving alerts when there is a valid arbitrage available","stop":"Thank you for using BOA. Text 'Join' to 724-806-1286 if you would like to join again.","invalidNum":"You must enter a number. Please try again","invalidCommand":"The command you entered is invalid. Valid commands are: reset or stop."}
 
 accountSid = "AC410618cdbef7d152a5b5b265e70d06cb" # test account sid
 authToken  = "fcb8105a8fe161a207d7d87680ee63bc"  # test auth token
@@ -37,7 +35,8 @@ def handle_message(message):
 
     elif(message.body.lower() == "stop"): #twilio handles unsubscribe message
         print "Stop"
-        del global_data.USER_DICT[message.from_] #remove customer from dictionary
+        if(message.from_ in global_data.USER_DICT):
+            del global_data.USER_DICT[message.from_] #remove customer from dictionary
         return
 
     elif(message.from_ not in global_data.USER_DICT): #new customer
@@ -95,8 +94,9 @@ def handle_message(message):
 
 #Returns True if there is a new message
 #False otherwise
-def get_next_message(currentSid):
-
+def get_next_message():
+    f = open("lastSid.txt", "r+")
+    lastSid = f.read()
     connected = 0
     while(connected == 0):
         try:
@@ -106,24 +106,25 @@ def get_next_message(currentSid):
             time.sleep(1)
 
     i=0
-    while(messages[i].sid != currentSid): #check if there is at least 1 new message
+    print "last sid:    "+lastSid
+    while(messages[i].sid != lastSid): #check if there is at least 1 new message
         m = messages[i] #get next message
-        print "new sid "+m.sid
-        print "current sid "+currentSid
+        print "current sid: "+m.sid
+        print "last sid:    "+lastSid
         # print m.body
         # print m.from_
         handle_message(m)
         time.sleep(1.5)
         i += 1
 
-    currentSid = messages[0].sid
-    print "currentSid "+currentSid
-    return currentSid
-'''
+    lastSid = messages[0].sid
+    f.write(lastSid)
+    f.close()
+    print "lastSid: "+lastSid
+    #return currentSid
+
 #testing
-currentSid = "SMceb52e964476d36ac11bbae9f0361a23"
 
 while (True):
-    currentSid = get_next_message(currentSid) #new phone number
+    currentSid = get_next_message() #new phone number
     print global_data.USER_DICT
-'''
