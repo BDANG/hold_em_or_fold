@@ -71,7 +71,7 @@ def handle_message(message):
                 valid = False
                 break
             else:
-                exchanges.append(global_data.EXCHANGE_LIST[int(message.body[i])-1]) #add each exchange to list
+                exchanges.append(global_data.EXCHANGE_LIST[int(message.body[i])-1][0]) #add each exchange to list
         #user has sent valid message
         if(valid):
             global_data.USER_DICT[message.from_] = (exchanges,global_data.USER_DICT[message.from_][1])

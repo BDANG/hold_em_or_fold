@@ -23,6 +23,7 @@ def loop():
     # Look through user list and alert users if a market they are interested in is above threshold
     for phoneNum, info in global_data.USER_DICT.iteritems():
         new_suggestions = []
+        print("Checking new opportunities for ", phoneNum, info)
         for opportunity in arbitrage_opportunities:
             if set(opportunity[0:2]).issubset(set(info[0])) and (opportunity[2] >= info[1]) and info[1] > 0:
 
@@ -63,7 +64,7 @@ def loop():
             for active_opportunity in active_suggestions[phoneNum]:
                 matched = 0
                 for current_opportunity in arbitrage_opportunities:
-                    if current_opportunity[0] == active_opportunity[0] and current_opportunity[1] == active_opportunity[1] and current_opportunity[2] >= (global_data.USER_DICT[phoneNum][1]*.97):
+                    if current_opportunity[0] == active_opportunity[0] and current_opportunity[1] == active_opportunity[1] and current_opportunity[2] >= (global_data.USER_DICT[phoneNum][1]*.95):
                         if set(active_opportunity[0:2]).issubset(set(global_data.USER_DICT[phoneNum][0])):
                             matched = 1
                         break
