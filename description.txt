@@ -1,12 +1,12 @@
 SteelHacks 2017 Project
-by Brian Dang, Craig Mazzota, and Xavier Torjerson
+by Brian Dang, Craig Mazzotta, and Xavier Torgerson
 
-Arbitrage is: 
-"the simultaneous buying and selling of securities, currency, or commodities 
-in different markets or in derivative forms in order to take advantage of differing 
+Arbitrage is:
+"the simultaneous buying and selling of securities, currency, or commodities
+in different markets or in derivative forms in order to take advantage of differing
 prices for the same asset."
 
-The goal of the project is to use twilio to notify subscribers about possible bitcoin 
+The goal of the project is to use twilio to notify subscribers about possible bitcoin
 arbitrage across the exchanges they personally utilize.
 
 The project accounts for the buy/sell fees for each available exchange.
@@ -15,5 +15,3 @@ Assumes the user has significant equity in both BTC and USD on the exchanges the
 to execute an arbitrage.
 
 Disclaimer: we are not responsible for any monetary losses.
-
-

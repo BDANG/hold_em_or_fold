@@ -3,7 +3,7 @@ import global_data
 import time
 
 #possible responses to user input
-RESPONSE_DICT = {"newCust":"Welcom to BAO.","exchanges": "Choose the bitcoin markets you currently have assets in: ","minArb":"What would you like your minimum arbitrage threshold to be?(percentage)","thank":"Thank you for using BOA. You will be receiving alerts when there is a valid arbitrage available. Reply 'stop' to opt out","invalidExchange":"Enter the exchanges as one number (ex: 1234 for all)","invalidArb":"You must enter the percent as an integer. (ex: 1% = 1)","invalidCommand":"The command you entered is invalid. Valid commands are: reset or stop."}
+RESPONSE_DICT = {"newCust":"Welcom to BAO.","exchanges": "Choose the bitcoin markets you currently have assets in (ex: 12345 for all): ","minArb":"At what percent gain would you like to be notified of a new arbitrage opportunity?","thank":"Thank you for using BOA. You will be receiving alerts when there is a valid arbitrage available. Reply 'stop' to opt out","invalidExchange":"Enter the exchanges as one number (ex: 1234 for all)","invalidArb":"Non-number value recognized. Enter the value without other characters. Example: 1.5 for 1.5%","invalidCommand":"The command you entered is invalid. Valid commands are: reset or stop."}
 
 accountSid = "AC410618cdbef7d152a5b5b265e70d06cb" # test account sid
 authToken  = "fcb8105a8fe161a207d7d87680ee63bc"  # test auth token
@@ -71,7 +71,7 @@ def handle_message(message):
                 valid = False
                 break
             else:
-                exchanges.append(global_data.EXCHANGE_LIST[int(message.body[i])-1]) #add each exchange to list
+                exchanges.append(global_data.EXCHANGE_LIST[int(message.body[i])-1][0]) #add each exchange to list
         #user has sent valid message
         if(valid):
             global_data.USER_DICT[message.from_] = (exchanges,global_data.USER_DICT[message.from_][1])
